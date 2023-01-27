@@ -34,6 +34,6 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_margin="20dp"
         android:id="@+id/listDistKM"
-        android:layout_width="40dp"
+        android:layout_width="500dp"
         android:layout_height="wrap_content" />
 </FrameLayout>

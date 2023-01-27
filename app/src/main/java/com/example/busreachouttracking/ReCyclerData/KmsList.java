@@ -12,10 +12,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.busreachouttracking.R;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class KmsList extends RecyclerView.Adapter<KmsList.MyViewHolder> {
 
     Context context;
+    String[] hours;
+    String[] minutes;
     ArrayList<Double> time = new ArrayList<>();
     ArrayList<Double> listKmUpdate = new ArrayList<>();
     public KmsList(Context context, ArrayList<Double> time, ArrayList<Double> listKmUpdate)
@@ -33,8 +36,10 @@ public class KmsList extends RecyclerView.Adapter<KmsList.MyViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        holder.txtKM.setText(""+listKmUpdate.get(position));
-        holder.txtTime.setText(""+time.get(position));
+        holder.txtKM.setText(String.valueOf(listKmUpdate.get(position)).substring(0,4)+" KM");
+        hours = String.valueOf(time.get(position)*60/60).split("[\\.]",0);
+        minutes =String.valueOf(time.get(position)*60%60).split("[\\.]",0);
+        holder.txtTime.setText(hours[0]+" hr "+minutes[0]+" min");
     }
 
     @Override

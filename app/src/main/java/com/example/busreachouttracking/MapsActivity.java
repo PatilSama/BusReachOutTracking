@@ -62,7 +62,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Marker marker, currentMarker;  // Polyline Marker and second one Current User Location Marker.
 
     ArrayList<Double> listKmUpdate = new ArrayList<>();  // Update KM on ListView.
-    double[] KmUpdate;
+    ArrayList<Double> time = new ArrayList<>(); // Update arrival bus time.
+    String KmUpdate;
     TextView txtSpeed;
     // Stop Latitude and Longitude.
     double[] stopLat = {18.46766, 18.472547, 18.481437, 18.492358, 18.500799, 18.512430}, stopLng = {73.86433, 73.863015, 73.861022, 73.857634, 73.856640, 73.843757};
@@ -194,16 +195,18 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     }
                 }
                 //  System.out.println("OKKKKKKK=" + listKmUpdate);
-                ArrayList<Double> time = new ArrayList<>();
                 for (int i = 0; i < listKmUpdate.size(); i++) {
                      if(!time.isEmpty() && time.size() ==listKmUpdate.size())
                      {
-                         time.set(i,listKmUpdate.get(i)/busSpeedCount);
-                     //    Toast.makeText(context, " already inti"+time.get(i), Toast.LENGTH_SHORT).show();
+                         if(busSpeedCount != 0)
+                         {
+                             time.set(i,listKmUpdate.get(i)/busSpeedCount);
+                         }
+                       //  Toast.makeText(context, " already inti"+time.get(i), Toast.LENGTH_SHORT).show();
                      }
                      else {
                          time.add(i,listKmUpdate.get(i)/busSpeedCount);
-                      //   System.out.println(listKmUpdate.size()+"============="+time.size());
+                       //  System.out.println(listKmUpdate.size()+"============="+time.size());
                      }
                 }
                 listDistKM.setLayoutManager(new LinearLayoutManager(MapsActivity.this));
