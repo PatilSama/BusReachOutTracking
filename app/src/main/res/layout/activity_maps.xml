@@ -34,6 +34,21 @@
     <androidx.recyclerview.widget.RecyclerView
         android:layout_margin="20dp"
         android:id="@+id/listDistKM"
-        android:layout_width="500dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content" />
+    <Button
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="20dp"
+        android:id="@+id/btnInOut"
+        android:text="In / Out"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></Button>
+    <Button
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="80dp"
+        android:id="@+id/btnMaxSpeed"
+        android:text="MaxSpeed"
+        android:textColor="@android:color/holo_red_dark"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></Button>
 </FrameLayout>
