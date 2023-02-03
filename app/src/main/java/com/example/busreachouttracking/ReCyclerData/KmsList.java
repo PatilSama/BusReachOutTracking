@@ -26,7 +26,7 @@ public class KmsList extends RecyclerView.Adapter<KmsList.MyViewHolder> {
         this.context = context;
         this.time = time;
         this.listKmUpdate=listKmUpdate;
-        this.busSpeed=busSpeed;
+        this.busSpeed = busSpeed;
     }
     @NonNull
     @Override
@@ -38,16 +38,16 @@ public class KmsList extends RecyclerView.Adapter<KmsList.MyViewHolder> {
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         holder.txtKM.setText(String.valueOf(listKmUpdate.get(position)).substring(0,4)+" KM");
-       if(busSpeed!=0)
-       {
-           hours = String.valueOf(time.get(position)*60/60).split("[\\.]",0) ;
-           minutes =String.valueOf(time.get(position)*60%60).split("[\\.]",0);
-           holder.txtTime.setText(hours[0]+" hr "+minutes[0]+" min");
-       }
-       else
-       {
-           holder.txtTime.setText(0+" hr "+ 0+" min");
-       }
+        if(busSpeed!=0)
+        {
+            hours = String.valueOf(time.get(position)*60/60).split("[\\.]",0) ;
+            minutes =String.valueOf(time.get(position)*60%60).split("[\\.]",0);
+            holder.txtTime.setText(hours[0]+" hr "+minutes[0]+" min");
+        }
+        else
+        {
+            holder.txtTime.setText(0+" hr "+ 0+" min");
+        }
 
     }
 

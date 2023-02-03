@@ -56,20 +56,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     ArrayList<LatLng> latitudePoly = new ArrayList<LatLng>();
     ArrayList<LatLng> arrayListStopsCord = new ArrayList<>();  // Add All Stop Marker.
     Polyline polyline;
-    float distMetre = 0;
-    int busSpeedCount = 0, busSpeed = 0;
+    float distMetre = 0, distAverage;
+    int busSpeedCount = 0, busSpeed = 0, sumOfSpeed = 0;
     RecyclerView listDistKM;
-    int maxSpeed = 0;
+    int maxSpeed = 0, avgSpeed = 0;
     Marker marker, currentMarker;  // Polyline Marker and second one Current User Location Marker.
     ImageButton btnNext;
-    ArrayList<Double> listKmUpdate = new ArrayList<>();  // Update KM on ListView.
-    ArrayList<Double> time = new ArrayList<>(); // Update arrival bus time.
+    ArrayList<Double> listKM = new ArrayList<>();  // Update KM on ListView.
+    ArrayList<Double> busArrivalTime = new ArrayList<>(); // Update arrival bus time.
     ArrayList<Integer> speed = new ArrayList<>();
     String KmUpdate;
-    Button btnInOut, btnMaxSpeed;
+    Button btnInOut, btnMaxSpeed, btnDistanceFromBusStop;
     TextView txtSpeed;
+    private boolean speedAvgStatus = true, speedStatusForClear = false;
     // Stop Latitude and Longitude.
-    double[] stopLat = {18.46766, 18.472547, 18.481437, 18.492358, 18.500799, 18.512430}, stopLng = {73.86433, 73.863015, 73.861022, 73.857634, 73.856640, 73.843757};
+    double[] stopLat = {18.46766, 18.472547, 18.481437, 18.492358, 18.500799, 18.512430, 18.489592},
+            stopLng = {73.86433, 73.863015, 73.861022, 73.857634, 73.856640, 73.843757, 73.810778};
+//    double[] stopLat = {18.46766, 18.472547, 18.481437, 18.492358, 18.500799, 18.512430},
+//            stopLng = {73.86433, 73.863015, 73.861022, 73.857634, 73.856640, 73.843757};
 
     ArrayList<Float> totalKmSequence = new ArrayList<>();
     // Polyline Latitude.
@@ -78,14 +82,27 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             18.484018, 18.484820, 18.485544, 18.486448, 18.487104, 18.488538, 18.489801, 18.490948, 18.492358, 18.493466,
             18.494530, 18.496197, 18.496634, 18.497709, 18.498841, 18.499604, 18.500100, 18.500381, 18.500576, 18.500799,
             18.501269, 18.501746, 18.502810, 18.504423, 18.505699, 18.506072, 18.507078, 18.507706, 18.508536, 18.509250,
-            18.509789, 18.510552, 18.511269, 18.511560, 18.511947, 18.512430};
+            18.509789, 18.510552, 18.511269, 18.511560, 18.511947, 18.512430, 18.489592};
     // Polyline Longitude.
     private double lng[] = {73.86433, 73.864243, 73.864088, 73.863712, 73.863410, 73.863015,
             73.862831, 73.862569, 73.862405, 73.862277, 73.861985, 73.861580, 73.861488, 73.861304, 73.861022, 73.860402,
             73.859679, 73.859392, 73.858844, 73.858116, 73.857465, 73.857373, 73.857470, 73.857583, 73.857634, 73.857747,
             73.857901, 73.857937, 73.857952, 73.858116, 73.858290, 73.858372, 73.858424, 73.858280, 73.857880, 73.856640,
             73.854289, 73.853871, 73.853769, 73.853607, 73.853590, 73.852666, 73.851375, 73.850517, 73.849303, 73.848025,
-            73.847081, 73.846046, 73.845289, 73.844840, 73.844052, 73.843757};
+            73.847081, 73.846046, 73.845289, 73.844840, 73.844052, 73.843757, 73.810778};
+    //    private double lat[] = {18.46766, 18.468148, 18.468965, 18.470715, 18.471750, 18.472547,
+//            18.472936, 18.474117, 18.475366, 18.476625, 18.477403, 18.478594, 18.479318, 18.480304, 18.481437, 18.482594,
+//            18.484018, 18.484820, 18.485544, 18.486448, 18.487104, 18.488538, 18.489801, 18.490948, 18.492358, 18.493466,
+//            18.494530, 18.496197, 18.496634, 18.497709, 18.498841, 18.499604, 18.500100, 18.500381, 18.500576, 18.500799,
+//            18.501269, 18.501746, 18.502810, 18.504423, 18.505699, 18.506072, 18.507078, 18.507706, 18.508536, 18.509250,
+//            18.509789, 18.510552, 18.511269, 18.511560, 18.511947, 18.512430};
+//    // Polyline Longitude.
+//    private double lng[] = {73.86433, 73.864243, 73.864088, 73.863712, 73.863410, 73.863015,
+//            73.862831, 73.862569, 73.862405, 73.862277, 73.861985, 73.861580, 73.861488, 73.861304, 73.861022, 73.860402,
+//            73.859679, 73.859392, 73.858844, 73.858116, 73.857465, 73.857373, 73.857470, 73.857583, 73.857634, 73.857747,
+//            73.857901, 73.857937, 73.857952, 73.858116, 73.858290, 73.858372, 73.858424, 73.858280, 73.857880, 73.856640,
+//            73.854289, 73.853871, 73.853769, 73.853607, 73.853590, 73.852666, 73.851375, 73.850517, 73.849303, 73.848025,
+//            73.847081, 73.846046, 73.845289, 73.844840, 73.844052, 73.843757};
     private boolean lctStatus = true;
 
     @Override
@@ -101,6 +118,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         btnInOut = binding.getRoot().findViewById(R.id.btnInOut);
         btnMaxSpeed = binding.getRoot().findViewById(R.id.btnMaxSpeed);
         txtSpeed = binding.getRoot().findViewById(R.id.txtSpeed);
+        btnDistanceFromBusStop = binding.getRoot().findViewById(R.id.btnDistanceFromBusStop);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -116,8 +134,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private void getCurrentUserLocation() {
         // get the current status 1 location within 2000 milliSecond(2 Second) by this class.
         com.google.android.gms.location.LocationRequest locationRequest = new com.google.android.gms.location.LocationRequest()
-                .setInterval(10000)
-                .setFastestInterval(10000)
+                .setInterval(1000)
+                .setFastestInterval(1000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -142,6 +160,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         txtSpeed.setText(busSpeedCount + " km/h");
                         speed.add(busSpeedCount);
                     }
+                    avgSpeedOfBus(currentLatitude, currentLongitude);
                     currentLocationChange(currentLatitude, currentLongitude);
                     calculateSpeedAndDist(currentLatitude, currentLongitude);
 //                    Toast.makeText(getApplicationContext(),currentLatitude+" : "+currentLongitude,Toast.LENGTH_SHORT).show();
@@ -176,6 +195,56 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    private void avgSpeedOfBus(double latitude1, double longitude1) {
+        Log.d("speed === ", speed + "");
+        aa:
+        for (int dksLat = 0; dksLat < stopLat.length; dksLat++) {
+            bb:
+            for (int dksLng = 0; dksLng < stopLng.length; dksLng++) {
+
+                float[] meterAverageSpeed = new float[1];
+                Location.distanceBetween(latitude1, longitude1, stopLat[dksLat], stopLng[dksLng], meterAverageSpeed);
+                distAverage = meterAverageSpeed[0];
+                if (distAverage < 100) {
+//                                Toast.makeText(context, "Less== "+distAverage, Toast.LENGTH_SHORT).show();
+                    btnDistanceFromBusStop.setText("Distance_From =" + (int) distAverage);
+                    btnDistanceFromBusStop.setBackgroundColor(Color.GREEN);
+                    //   Log.d("distMetre =",stopLat[dksLat]+""+ stopLng[dksLng]+""+distAverage+"");
+                    if (speedAvgStatus && !speed.isEmpty()) {
+
+                        for (int avgsp = 0; avgsp < speed.size(); avgsp++) // avgp means AverageSpeed.
+                        {
+                            sumOfSpeed += speed.get(avgsp);
+                            //    System.out.println("speed = "+speed.get(avgp));
+                        }
+                        avgSpeed = sumOfSpeed / speed.size();
+//                        if(avgSpeed != 0)
+//                        {
+//                        }
+//                        avgSpeed = Collections.max(speed);
+                        speedAvgStatus = false;
+                        Log.d("==avgSpeed=======", avgSpeed + " = " + distAverage);
+                        //  btnMaxSpeed.setText(avgSpeed+"");
+                        break aa;
+                    } else {
+
+                        Log.d("Clear = ", "clear");
+                        speed.clear();
+                        break aa;
+                    }
+                } else {
+                    //  speedAvgStatus = true;
+                    btnDistanceFromBusStop.setText("Distance_From =" + (int) distAverage);
+                    btnDistanceFromBusStop.setBackgroundColor(Color.RED);
+                    if (speed.size() > 10) {
+                        speedAvgStatus = true;
+                        Log.d("=========abc========", distAverage + "");
+                    }
+                }
+            }
+        }
+    }
+
     // it will provide a Speed and Distance.
     public void calculateSpeedAndDist(double latitude, double longitude) {
         if (latitude != 0.0 && longitude != 0.0) {
@@ -193,129 +262,85 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         totalKmSequence.add(dc, distMetre);
                     }
 
-                    // Calculate reach out distance.
-                    reachOutAlert(totalKmSequence, latitude, longitude, lat[dc], lng[dc]);
                     for (int dksLat = 0; dksLat < stopLat.length; dksLat++) {
                         for (int dksLng = 0; dksLng < stopLng.length; dksLng++) {
-
                             // Check bus stop coordinate mach.
                             if (lat[dc] == stopLat[dksLat] && lng[dc] == stopLng[dksLng]) {
-
-                                if (speed != null) {
-                                    System.out.print("======" + speed);
-                                    maxSpeed = Collections.max(speed);
-                                    //  Toast.makeText(context, ""+maxSpeed, Toast.LENGTH_SHORT).show();
-                                    if (maxSpeed != 0 && speed.size() > 7) {
-                                        for (int i = 0; i < speed.size() - 2; i++) {
-                                            speed.remove(i);
-                                        }
-                                        Log.d("=============", "" + speed);
-                                    }
-                                    Log.d("==", "" + speed);
-                                }
-
-                                if (!listKmUpdate.isEmpty() && listKmUpdate.size() == stopLng.length) {
-                                    listKmUpdate.set(dksLng, distKM);
+                                if (!listKM.isEmpty() && listKM.size() == stopLng.length) {
+                                    listKM.set(dksLng, distKM);
+                                    //    Log.d("KmUpdate",lat[dc]+","+stopLat[dksLat]+"  :  "+lng[dc]+","+stopLng[dksLng]+" KmUpdate "+listKM.get(dksLng)+"");
                                 } else {
-                                    listKmUpdate.add(dksLng, distKM);
-                                    maxSpeed = Collections.max(speed);
+                                    listKM.add(dksLng, distKM);
                                 }
-                                break;
                             }
                         }
                     }
                 }
 
-                for (int i = 0; i < listKmUpdate.size(); i++) {
-                    if (!time.isEmpty() && time.size() == listKmUpdate.size()) {
-                        if (maxSpeed != 0) {
-                            time.set(i, listKmUpdate.get(i) / maxSpeed);
-                            busSpeed = maxSpeed;
-                            btnMaxSpeed.setText(String.valueOf(busSpeed));
-                        } else {
-                            time.set(i, listKmUpdate.get(i) / busSpeedCount);
-                            busSpeed = busSpeedCount;
-                            btnMaxSpeed.setText(String.valueOf(busSpeed));
-                        }
-                        //  Toast.makeText(context, " already inti"+time.get(i), Toast.LENGTH_SHORT).show();
-                    } else {
-                        if (maxSpeed != 0) {
-                            time.add(i, listKmUpdate.get(i) / maxSpeed);
-                            busSpeed = busSpeedCount;
-                            btnMaxSpeed.setText(String.valueOf(busSpeed));
-                        } else {
-                            time.add(i, listKmUpdate.get(i) / busSpeed);
-                            busSpeed = busSpeedCount;
-                            btnMaxSpeed.setText(String.valueOf(busSpeed));
-                        }
-                        //  System.out.println(listKmUpdate.size()+"============="+time.size());
+                // Calculate reach out distance.
+                reachOutAlert(totalKmSequence, latitude, longitude);
+
+                for (int i = 0; i < listKM.size(); i++) {
+
+                    if (avgSpeed != 0) {
+                        busArrivalTime.set(i, listKM.get(i) / avgSpeed);
+                    } else if (busSpeedCount != 0) {
+                        busArrivalTime.add(i, listKM.get(i) / busSpeedCount);
+                        Log.d("Add", "" + busArrivalTime.get(i));
                     }
+
                 }
+                if (avgSpeed != 0) {
+                    busSpeed = avgSpeed;
+                    btnMaxSpeed.setText(String.valueOf(avgSpeed));
+                } else if (busSpeedCount != 0) {
+                    busSpeed = busSpeedCount;
+                    btnMaxSpeed.setText(String.valueOf(busSpeedCount));
+                    Toast.makeText(context, "BusSpeed = " + busSpeedCount, Toast.LENGTH_SHORT).show();
+                }
+
+
+//                for (int i = 0; i < listKM.size(); i++) {
+//                    if (!busArrivalTime.isEmpty() && busArrivalTime.size() == listKM.size()) {
+//                        if (avgSpeed != 0) {
+//                            busArrivalTime.set(i, listKM.get(i) / avgSpeed);
+//                            busSpeed = avgSpeed;
+//                            btnMaxSpeed.setText(String.valueOf(busSpeed));
+//                        } else {
+//                            busArrivalTime.set(i, listKM.get(i) / busSpeedCount);
+//                            busSpeed = busSpeedCount;
+//                            btnMaxSpeed.setText(String.valueOf(busSpeed));
+//                        }
+//                        //  Toast.makeText(context, " already inti"+time.get(i), Toast.LENGTH_SHORT).show();
+//                    } else {
+//                        if (busSpeedCount != 0) {
+//                            busArrivalTime.add(i, listKM.get(i) / avgSpeed);
+//                            busSpeed = busSpeedCount;
+//                            btnMaxSpeed.setText(String.valueOf(busSpeedCount));
+//                        } else {
+//                            busArrivalTime.add(i, listKM.get(i) / busSpeed);
+//                            busSpeed = busSpeedCount;
+//                            btnMaxSpeed.setText(String.valueOf(busSpeedCount));
+//                        }
+//                    }
+//                }
+
                 listDistKM.setLayoutManager(new LinearLayoutManager(MapsActivity.this));
-                listDistKM.setAdapter(new KmsList(context, time, listKmUpdate, busSpeed));
-//                listDistKM.setAdapter(new ArrayAdapter<Double>(MapsActivity.this, R.layout.listview_textdesign, R.id.txtKM, listKmUpdate));
+                listDistKM.setAdapter(new KmsList(context, busArrivalTime, listKM, busSpeed));//, busSpeed
             }
         }
-
-//        double newTime = System.currentTimeMillis();
-//        double distance = calculationBydistance(latitude, longitude, oldLat, oldLon);
-//        double timeDifferent = newTime - curTime;
-//        speed = distance / timeDifferent;
-//        curTime = newTime;
-//        oldLat = latitude;
-//        oldLon = longitude;
-//    String currentSpeed = String.valueOf(speed).substring(0,String.valueOf(speed).length()-15);
-        // txtSpeed.setText(currentSpeed+" m/s");
-        //  Toast.makeText(getApplication(),"SPEED 2 : "+String.valueOf(speed)+"m/s",Toast.LENGTH_SHORT).show();
     }
 
-    private void reachOutAlert(ArrayList<Float> totalKmSequence, double latitude, double longitude, double v, double v1) {
+    private void reachOutAlert(ArrayList<Float> totalKmSequence, double latitude, double longitude) {
         Float meterDist = Collections.min(totalKmSequence);
 
-        if(maxSpeed!=0)
-        {
-            String totalMeter = String.valueOf(((meterDist * 0.001) / maxSpeed) * 60 * 60);
-            String[] abc = totalMeter.split("[\\.]");
-//            Toast.makeText(context, ""+abc[0], Toast.LENGTH_SHORT).show();
-            Log.d("",abc[0]);
-            if(Integer.parseInt(abc[0])<120)
-            {
-//                Toast.makeText(context, "__"+abc[0], Toast.LENGTH_SHORT).show();
-                btnInOut.setText("IN");
-                btnInOut.setBackgroundColor(Color.GREEN);
-                btnMaxSpeed.setBackgroundColor(Color.WHITE);
-            }
-            else
-            {
-//                Toast.makeText(context, "+++"+abc[0], Toast.LENGTH_SHORT).show();
-                btnInOut.setText("OUT");
-                btnMaxSpeed.setBackgroundColor(Color.BLACK);
-                btnInOut.setBackgroundColor(Color.RED);
-            }
-        }
-        else
-        {
-          if(busSpeedCount!=0)
-          {
-              String totalMeter = String.valueOf(((meterDist * 0.001) / busSpeedCount) * 60 * 60);
-              String[] abc = totalMeter.split("[\\.]");
-//              Toast.makeText(context, ""+abc[0], Toast.LENGTH_SHORT).show();
-              Log.d("",abc[0]);
-              if(Integer.parseInt(abc[0])<=120)
-              {
-//                Toast.makeText(context, "__"+abc[0], Toast.LENGTH_SHORT).show();
-                  btnInOut.setText("IN");
-                  btnInOut.setBackgroundColor(Color.GREEN);
-                  btnMaxSpeed.setBackgroundColor(Color.WHITE);
-              }
-              else
-              {
-//                Toast.makeText(context, "+++"+abc[0], Toast.LENGTH_SHORT).show();
-                  btnInOut.setText("OUT");
-                  btnInOut.setBackgroundColor(Color.RED);
-                  btnMaxSpeed.setBackgroundColor(Color.BLACK);
-              }
-          }
+        if (avgSpeed != 0) {
+            alertTime(avgSpeed, meterDist);
+            //  Log.d("maxSpeed",""+maxSpeed);
+        } else if (busSpeedCount != 0) {
+
+            alertTime(busSpeedCount, meterDist);
+            //    Log.d("busSpeedCount",""+busSpeedCount);
         }
 
 //        if (meterDist < 200) {
@@ -327,6 +352,24 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //            btnInOut.setText("OUT");
 //            btnMaxSpeed.setBackgroundColor(Color.BLACK);
 //        }
+    }
+
+    private void alertTime(int speed, Float meterDist) {
+        String totalMeter = String.valueOf(((meterDist * 0.001) / speed) * 60 * 60);
+        String[] abc = totalMeter.split("[\\.]");
+//            Toast.makeText(context, ""+abc[0], Toast.LENGTH_SHORT).show();
+        Log.d("", abc[0]);
+        if (Integer.parseInt(abc[0]) < 120) {
+//                Toast.makeText(context, "__"+abc[0], Toast.LENGTH_SHORT).show();
+            btnInOut.setText("IN = " + (int) (Math.round(meterDist)));
+            btnInOut.setBackgroundColor(Color.GREEN);
+            //   btnMaxSpeed.setBackgroundColor(Color.WHITE);
+        } else {
+//                Toast.makeText(context, "+++"+abc[0], Toast.LENGTH_SHORT).show();
+            btnInOut.setText("OUT = " + (int) (Math.round(meterDist)));
+            //    btnMaxSpeed.setBackgroundColor(Color.BLACK);
+            btnInOut.setBackgroundColor(Color.RED);
+        }
     }
 
     // Set icon for current bus Location.
@@ -379,7 +422,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         for (int i = 0; i < lng.length; i++) {
             latitudePoly.add(i, new LatLng(lat[i], lng[i]));
         }
-        System.out.println("poly = " + latitudePoly);
+        //   System.out.println("poly = " + latitudePoly);
         polyline = googleMap.addPolyline(new PolylineOptions()
 //                .add(new LatLng(18.46766,73.86433),new LatLng(18.470715,73.863712))
                 .addAll(latitudePoly)

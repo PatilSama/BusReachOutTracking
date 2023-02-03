@@ -51,4 +51,12 @@
         android:textColor="@android:color/holo_red_dark"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></Button>
+    <Button
+        android:layout_gravity="bottom"
+        android:layout_marginBottom="125dp"
+        android:id="@+id/btnDistanceFromBusStop"
+        android:text="Distance_From"
+        android:textColor="@color/purple_700"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"></Button>
 </FrameLayout>
